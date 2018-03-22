@@ -1,22 +1,6 @@
 IQAROS (Incremental Query Answering and Rewriting Ontology System) is a prototypical query rewriting system based on incremental query rewriting.
-See http://code.google.com/p/iqaros/ for further information.
 
-IQAROS is Copyright (c) 2011
-Image, Video and Multimedia Laboratory, NTUA
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
-Given an ontology schema (i.e. TBox) and conjunctive query, IQAROS generates a union of conjunctive queries such that the answers of the union of conjunctive queries over some input data and discarding the ontology schema are precisely the answers of the original query over the same input data and ontology schema.
+Given an ontology schema and conjunctive query, IQAROS generates a union of conjunctive queries such that the answers of the union of conjunctive queries over some input data and discarding the ontology schema are precisely the answers of the original query over the same input data and ontology schema.
 
 The theory behind IQAROS is presented in the paper
 
