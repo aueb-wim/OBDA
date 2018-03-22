@@ -16,3 +16,13 @@ GlashFish Settings:
 4) Increase the "-Xmx" parameter e.x. to -Xmx5012m
 5) Save & Restart the server to apply changes
 
+<h2> Servlet Example </h2>
+
+Query: Type the query or upload the file containing it
+Ontology file: upload the .owl file
+
+![](servlet_images_example/type_query.png?raw=true)
+
+<h2> After execution </h2>
+
+![](servlet_images_example/type_query_result.png?raw=true)
