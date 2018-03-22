@@ -1,0 +1,5 @@
+1) Navigate to glashfish admin panel, localhost:4848
+2) Go to Configurations->server-config->JVM Settings
+3) Then go to "JVM Options" tab
+4) Increase the "-Xmx" parameter e.x. to -Xmx5012m
+5) Save & Restart the server to apply changes

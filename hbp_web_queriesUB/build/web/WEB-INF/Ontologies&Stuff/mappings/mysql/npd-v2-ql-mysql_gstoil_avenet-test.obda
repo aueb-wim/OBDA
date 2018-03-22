@@ -1,0 +1,4 @@
+
+mappingId	Mapping:00001:Literal:wellbore_coordinates:wlbNsMin
+target		npd:wellbore/{wlbNpdidWellbore}/point npdv:minutesNS {wlbNsMin}^^xsd:integer . 
+source		SELECT wlbNpdidWellbore,wlbNsMin FROM wellbore_coordinates
