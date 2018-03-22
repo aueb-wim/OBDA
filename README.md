@@ -19,6 +19,7 @@ GlashFish Settings:
 <h2> Servlet Example </h2>
 
 Query: Type the query or upload the file containing it
+
 Ontology file: upload the .owl file
 
 ![](servlet_images_example/type_query.png?raw=true)
