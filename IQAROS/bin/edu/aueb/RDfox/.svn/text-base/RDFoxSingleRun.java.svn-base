@@ -1,0 +1,594 @@
+package edu.aueb.RDfox;
+
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.log4j.PropertyConfigurator;
+import org.oxford.comlab.perfectref.parser.DLliteParser;
+import org.oxford.comlab.perfectref.rewriter.Clause;
+import org.oxford.comlab.perfectref.rewriter.PI;
+import org.oxford.comlab.perfectref.rewriter.Term;
+import org.oxford.comlab.perfectref.rewriter.TermFactory;
+import org.oxford.comlab.perfectref.rewriter.Variable;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLProperty;
+
+import edu.aueb.queries.ClauseParser;
+import uk.ac.ox.cs.JRDFox.JRDFStoreException;
+
+
+public class RDFoxSingleRun {
+
+	private static final DLliteParser parser = new DLliteParser();
+	private static TermFactory m_termFactory = new TermFactory();
+
+	private int orderedQueryIndex=0;
+
+	static String originalPath = "/Users/avenet/Academia/Ntua/Ontologies/";
+
+	static String uri = "";
+
+	public static void main(String[] args) throws Exception{
+		PropertyConfigurator.configure("./logger.properties");
+
+		String ontologyFile, queryPath, optPath, path, dbPath, dataFiles;
+		RDFoxQueryEvaluator evaluator = null;
+
+		boolean OWLimOpt = true;
+
+//		/**
+//		 * LUBM Tests
+//		 */
+//		path = originalPath + "LUBM/";
+//		ontologyFile = "file:" + path + "univ-bench_DL-Lite_mine.owl";
+//		queryPath = path + "QueriesWithConstants/";
+//		uri = "http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#";
+//		/*
+//		 * LUBM DB
+//		 */
+//		dbPath = "jdbc:postgresql://127.0.0.1:5432/LUBM";
+//		optPath = path + "OptimizationClausesOWLim/optimizationClauses.txt";
+//		dataFiles = "/Users/avenet/Academia/Ntua/JavaWorkspace/uba1.7/Ontos1/";
+//		System.out.println("**************************");
+//		System.out.println("**\tLUBM\t\t**");
+//		System.out.println("**************************");
+//		evaluator = createDataSetsAndEvaluator(dataFiles, dbPath, ontologyFile);
+////		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+////		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		System.exit(0);
+//		/*
+//		 * LUBM10 DB
+//		 */
+//		dbPath = "jdbc:postgresql://127.0.0.1:5432/LUBM10"; //This database contains data from 15 universities
+//		optPath = path + "OptimizationClausesOWLim/optimizationClauses10.txt";
+//		dataFiles = "/Users/avenet/Academia/Ntua/JavaWorkspace/uba1.7/Ontos10/";
+//		System.out.println("**************************");
+//		System.out.println("**\tLUBM10\t\t**");
+//		System.out.println("**************************");
+//		evaluator = createDataSetsAndEvaluator(dataFiles, dbPath, ontologyFile);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		evaluator.shutDown();
+//		/*
+//		 * LUBM30 DB
+//		 */
+//		dbPath = "jdbc:postgresql://127.0.0.1:5432/LUBM30"; //This database contains data from 30 universities
+//		optPath = path + "OptimizationClausesOWLim/optimizationClauses30.txt";
+//		dataFiles = "/Users/avenet/Academia/Ntua/JavaWorkspace/uba1.7/Ontos30/";
+//		System.out.println("**************************");
+//		System.out.println("**\tLUBM30\t\t**");
+//		System.out.println("**************************");
+//		evaluator = createDataSetsAndEvaluator(dataFiles, dbPath, ontologyFile);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		evaluator.shutDown();
+		/**
+		 * UOBM Tests
+		 */
+		path = originalPath + "UOBM/";
+		ontologyFile = "file:" + path + "univ-bench-dl-Zhou_DL-Lite_mine.owl";
+		queryPath = path + "QueriesWithConstants/";
+		optPath = path + "OptimizationClausesOWLim/optimizationClauses.txt";
+//		uri = "http://semantics.crl.ibm.com/univ-bench-dl.owl#";
+		dataFiles = path + "UOBMGenerator/preload_generated_uobm50_dbcreation/";
+//		/*
+//		 * UOBM DB
+//		 */
+//		dbPath = "jdbc:postgresql://127.0.0.1:5432/UOBM";
+//		System.out.println("**************************");
+//		System.out.println("**\tUOBM\t\t**");
+//		System.out.println("**************************");
+//		evaluator = createDataSetsAndEvaluator(dataFiles, dbPath, ontologyFile);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		evaluator.shutDown();
+//		/*
+//		 * UOBM10 DB
+//		 */
+//		optPath = path + "OptimizationClausesOWLim/optimizationClauses10.txt";
+//		dbPath = "jdbc:postgresql://127.0.0.1:5432/UOBM10"; //This database contains data from 15 universities
+//		System.out.println("**************************");
+//		System.out.println("**\tUOBM10\t\t**");
+//		System.out.println("**************************");
+//		evaluator = createDataSetsAndEvaluator(dataFiles, dbPath, ontologyFile);
+////		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+////		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+////		evaluator.shutDown();
+//////		System.exit(0);
+		/*
+		 * UOBM30 DB
+		 */
+		optPath = path + "OptimizationClausesOWLim/optimizationClauses30.txt";
+		dbPath = "jdbc:postgresql://127.0.0.1:5432/UOBM30"; //This database contains data from 30 universities
+		System.out.println("**************************");
+		System.out.println("**\tUOBM30\t\t**");
+		System.out.println("**************************");
+		evaluator = createDataSetsAndEvaluator(dataFiles, dbPath, ontologyFile);
+		runTest(ontologyFile, queryPath, null, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		evaluator.shutDown();
+//		/**
+//		 * Semintec Tests
+//		 */
+//		path = originalPath + "Semintec/";
+//		ontologyFile = "file:" + path + "bigFile_DL-Lite_mine.owl";
+//		queryPath = path + "Queries/";
+//		optPath = path + "OptimizationClausesOWLim/optimizationClauses.txt";
+//		uri = "http://www.owl-ontologies.com/unnamed.owl#";
+//		/*
+//		 * Semintex DB
+//		 */
+//		dbPath = "jdbc:postgresql://127.0.0.1:5432/Semintec";
+//		dataFiles = path;
+//		System.out.println("**************************");
+//		System.out.println("**\tSemintec\t\t**");
+//		System.out.println("**************************");
+//		evaluator = createDataSetsAndEvaluator(dataFiles, dbPath, ontologyFile);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		evaluator.shutDown();
+//		/**
+//		 * Vicodi Tests
+//		 */
+//		path = originalPath + "Vicodi/";
+//		ontologyFile = "file:" + path + "vicodi_all_DL-Lite_mine.owl";
+//		queryPath = path + "Queries/";
+//		optPath = path + "OptimizationClausesOWLim/optimizationClauses.txt";
+//		uri = "http://vicodi.org/ontology#";
+//		/*
+//		 * Vicodi DB
+//		 */
+//		dbPath = "jdbc:postgresql://127.0.0.1:5432/Vicodi";
+//		dataFiles = path;
+//		System.out.println("**************************");
+//		System.out.println("**\tVicodi\t\t**");
+//		System.out.println("**************************");
+//		evaluator = createDataSetsAndEvaluator(dataFiles, dbPath, ontologyFile);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		evaluator.shutDown();
+//		/**
+//		 * Reactome tests
+//		 */
+//		path =  originalPath + "reactome/";
+//		ontologyFile = "file:" + path + "biopax-level3-processed_DL-Lite_mine.owl";
+//		queryPath = path + "Queries/";
+//		optPath = path + "OptimizationClausesOWLim/optimizationClauses.txt";
+//		uri = "http://www.biopax.org/release/biopax-level3.owl#";
+//		/*
+//		 * Reactome DB
+//		 */
+//		dbPath = "jdbc:postgresql://127.0.0.1:5432/reactome";
+//		dataFiles = path;
+//		System.out.println("**************************");
+//		System.out.println("**\tReactome\t\t**");
+//		System.out.println("**************************");
+//		evaluator = createDataSetsAndEvaluator(dataFiles, dbPath, ontologyFile);
+////		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+////		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+////		evaluator.shutDown();
+		
+//		/**
+//		 * Fly tests
+//		 */
+//		path =  originalPath + "Fly/";
+////		String onto = "";
+////		String onto = "-new";
+//		String onto = "-new-noTrans";
+//		ontologyFile = "file:" + path + "fly_anatomy_XP_with_GJ_FC_individuals_owl-tBox-AssNorm" + onto + ".owl";
+////		ontologyFile = "file:" + path + "Fly_DL_Lite.owl";
+//		queryPath = path + "QueriesOWLim/";
+//		optPath = path + "OptimizationClausesRDFox/OptimizationClauses"+ onto + ".txt";
+////		optPath = path + "OptimizationClausesRDFox/OptimizationClauses"+ onto + "_noCombinations.txt";
+//		dataFiles = path;
+////		excelFile = "/Users/avenet/Academia/Aueb/Research/IncrementalQueryAnswering/EvaluationResults/Fly/IQAROS/RDFox/Fly" + onto + "NAIVE.xlsx";
+////		excelFile = "/Users/avenet/Academia/Aueb/Research/IncrementalQueryAnswering/EvaluationResults/Fly/IQAROS/RDFox/Fly" + onto + ".xlsx";
+////		excelFile = "/Users/avenet/Academia/Aueb/Research/IncrementalQueryAnswering/EvaluationResults/Fly/IQAROS/RDFox/Fly" + onto + "---.xlsx";
+//		/*
+//		 * Fly DB
+//		 */
+//		dbPath = "jdbc:postgresql://127.0.0.1:5432/Fly";
+//		System.out.println("**************************");
+//		System.out.println("**\tFly\t\t**");
+//		System.out.println("**************************");
+//		evaluator = createDataSetsAndEvaluator(dataFiles, dbPath, ontologyFile);
+////		print2Excel=false;
+//		runTest(ontologyFile, queryPath, optPath, evaluator, true, OWLimOpt);
+		
+		System.exit(0);
+
+	}
+
+	private static RDFoxQueryEvaluator createDataSetsAndEvaluator(String dataFiles, String dbPath, String ontologyFile) throws FileNotFoundException, OWLOntologyCreationException, URISyntaxException, JRDFStoreException {
+
+		String[] datasetFiles = null;
+		RDFoxQueryEvaluator evaluator = new RDFoxQueryEvaluator();
+		
+		System.out.println( "dataFiles = " + dataFiles  );
+		if ( dataFiles.contains("uba1.7") ){
+			System.out.println("LUBM" + dataFiles);
+			datasetFiles = createDataSetFilesLUBM(dataFiles);
+		}
+		else if (dbPath.contains("UOBM10") ) {
+			System.out.println("UOBM10");
+			datasetFiles = createDataSetFilesUOBM(dataFiles,10);
+		}
+		else if (dbPath.contains("UOBM30") ) {
+			System.out.println("UOBM30");
+			datasetFiles = createDataSetFilesUOBM(dataFiles,30);
+		}
+		else if (dbPath.contains("UOBM") ) {
+			System.out.println("UOBM");
+			datasetFiles = createDataSetFilesUOBM(dataFiles,1);
+		}
+		else if (dataFiles.contains("Semintec") ) {
+			System.out.println("Semintec");
+			datasetFiles = createDataSetFilesSemintec(dataFiles);
+		}
+		else if (dataFiles.contains("Vicodi") ) {
+			System.out.println("Vicodi");
+			datasetFiles = createDataSetFilesVicodi(dataFiles);
+		}
+		else if (dataFiles.contains("reactome") ) {
+			System.out.println("reactome");
+			datasetFiles = createDataSetFilesReactome(dataFiles);
+		}
+		else if (dataFiles.contains("Fly") ) {
+			System.out.println("Fly");
+			datasetFiles = createDataSetFilesFly(dataFiles);
+		}
+
+		evaluator.loadInputToSystem(ontologyFile, datasetFiles);
+    	return evaluator;
+	}
+	
+	public static String[] createDataSetFilesFly(String dataFilesPath) {
+		String[] result = new String[1];
+
+		result[0] = dataFilesPath + "fly_anatomy_XP_with_GJ_FC_individuals_owl-aBox-AssNorm.ttl";
+
+		return result;
+	}
+
+	private static void runTest(String ontologyFile, String queryPath, String optPath, RDFoxQueryEvaluator evaluator, boolean print, boolean OWLimOpt) throws Exception {
+		long start=0,totalTime = 0;
+		ArrayList<PI> tBoxAxioms = parser.getAxioms(ontologyFile);
+		ArrayList<Clause> rewriting = new ArrayList<Clause>();
+
+		File queriesDir = new File( queryPath );
+		File[] queries = queriesDir.listFiles();
+
+//    		long startTime = System.currentTimeMillis();
+//    		Set<String> ans = evaluator.evaluateQueryWithAnswers(new ClauseParser().parseClause("Q(?0,?1)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#isCrazyAbout(?0,?1)"));
+//    		long end = System.currentTimeMillis() - startTime;
+//    		System.out.println( "OWLim Answers: " + ans .size()+ " in " + end + "ms");
+//    		startTime = System.currentTimeMillis();
+//    		ans = evaluator.evaluateQueryWithAnswers(new ClauseParser().parseClause("Q(?0,?1)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#isCrazyAbout(?1,?0)"));
+//    		end = System.currentTimeMillis() - startTime;
+//    		System.out.println( "OWLim Answers: " + ans .size()+ " in " + end + "ms");
+//    		startTime = System.currentTimeMillis();
+//    		ans = evaluator.evaluateQueryWithAnswers(new ClauseParser().parseClause("Q(?0,?1)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#publicationAuthor(?1,?0)"));
+//    		end = System.currentTimeMillis() - startTime;
+//    		System.out.println( "OWLim Answers: " + ans .size()+ " in " + end + "ms");
+//    		startTime = System.currentTimeMillis();
+//    		ans = evaluator.evaluateQueryWithAnswers(new ClauseParser().parseClause("Q(?0,?1)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#publicationAuthor(?0,?1)"));
+//    		end = System.currentTimeMillis() - startTime;
+//    		System.out.println( "OWLim Answers: " + ans .size()+ " in " + end + "ms");
+//    		startTime = System.currentTimeMillis();
+//    		ans = evaluator.evaluateQueryWithAnswers(new ClauseParser().parseClause("Q(?0,?1)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#publicationAuthor(?1,?0)"));
+//    		end = System.currentTimeMillis() - startTime;
+//    		System.out.println( "OWLim Answers: " + ans .size()+ " in " + end + "ms");
+//    		startTime = System.currentTimeMillis();
+//    		ans = evaluator.evaluateQueryWithAnswers(new ClauseParser().parseClause("Q(?0,?1)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#takesCourse(?0,?1)"));
+//    		end = System.currentTimeMillis() - startTime;
+//    		System.out.println( "OWLim Answers: " + ans .size()+ " in " + end + "ms");
+//    		startTime = System.currentTimeMillis();
+//    		ans = evaluator.evaluateQueryWithAnswers(new ClauseParser().parseClause("Q(?0,?1)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#isFriendOf(?0,?1)"));
+//    		end = System.currentTimeMillis() - startTime;
+//    		System.out.println( "OWLim Answers: " + ans .size()+ " in " + end + "ms");
+//    		startTime = System.currentTimeMillis();
+//    		ans = evaluator.evaluateQueryWithAnswers(new ClauseParser().parseClause("Q(?0,?1)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#publicationAuthor(?1,?0)"));
+//    		end = System.currentTimeMillis() - startTime;
+//    		System.out.println( "OWLim Answers: " + ans .size()+ " in " + end + "ms");
+		
+		
+		Set<Clause> rdfoxRew = new HashSet<Clause>();
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#teachingAssistantOf(?0,X506)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#Professor(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#SwimmingFan(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#BaseballFan(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isAdvisedBy(X506,?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#BasketBallFan(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#AssistantProfessor(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#SwimmingLover(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#hasDegreeFrom(?0,X506) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isAdvisedBy(?0,X506) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isFriendOf(?0,X506) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#ClericalStaff(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#Person(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#hasMember(X506,?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isMemberOf(?0,X506) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isFriendOf(X506,?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#takesCourse(?0,X506)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#hasAlumnus(X506,?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isTaughtBy(X506,?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#Woman(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#BasketBallLover(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#FullProfessor(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#UndergraduateStudent(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#Lecturer(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#AssociateProfessor(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#Faculty(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#SystemsStaff(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#TennisFan(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#VisitingProfessor(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#SportsFan(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#teacherOf(?0,X506)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#publicationAuthor(X506,?0)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#SupportingStaff(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#BaseballLover(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#SportsLover(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+		rdfoxRew.add(new ClauseParser().parseClause("Q(?0)  <-  http://semantics.crl.ibm.com/univ-bench-dl.owl#Chair(?2) , http://semantics.crl.ibm.com/univ-bench-dl.owl#Man(?0) , http://semantics.crl.ibm.com/univ-bench-dl.owl#isHeadOf(?2,http://www.Department0.University0.edu) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?0,?1) , http://semantics.crl.ibm.com/univ-bench-dl.owl#like(?2,?1)"));
+
+		System.out.println("Rew size is " + rdfoxRew.size());
+		
+		long startTime = System.currentTimeMillis();
+//		Set<String> ans = evaluator.evaluateQueryWithAnswers(new ClauseParser().parseClause("Q(?0) <- http://purl.obolibrary.org/obo/FBbt_00005106(?0), http://purl.obolibrary.org/obo/FBbt_00067123(?0)"));
+		long ans = evaluator.evaluateQuery(rdfoxRew);
+		long end = System.currentTimeMillis() - startTime;
+		System.out.println( "OWLim Answers: " + ans + " in " + end + "ms");
+
+		
+		
+//		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+//		IRI physicalURI = IRI.create(ontologyFile);
+//        OWLOntology ontology = manager.loadOntology(physicalURI);
+//
+//        Set<OWLEntity> signature = ontology.getSignature();
+//		Set<OWLClass> concepts = new HashSet<OWLClass>();
+//		Set<OWLProperty> props = new HashSet<OWLProperty>();
+//		
+//		Variable var1 = m_termFactory.getVariable(0);
+//		Variable var2 = m_termFactory.getVariable(1);
+//
+//		for (OWLEntity entity: signature)
+//		{
+//			if ( entity instanceof OWLClass )
+//				concepts.add((OWLClass) entity);
+//			if ( entity instanceof OWLObjectProperty || entity instanceof OWLDataProperty )
+//				props.add((OWLProperty) entity);
+//		}
+//		
+//		System.out.println("\n\nEvaluating all properties: " + props.size());
+//		long startProperties = System.currentTimeMillis();
+//		int processed = 0;
+//		int progress = 0;
+//		int lastprogress = 0;
+//		int allWork = props.size();
+//		Set<Clause> clausesWithNoAnswers = new HashSet<>();
+//		for ( OWLProperty prop: props )
+//		{
+////			if ( processed%4 == 0) {
+////				ev = createDataSetsAndEvaluator(originalPath + "UOBM/" + "UOBMGenerator/preload_generated_uobm50_dbcreation/", "UOBM30", ontologyFile);
+////			}
+//
+//			processed++;
+//			progress=processed;
+//			progress=progress/allWork;
+//			if (progress>lastprogress+0.05) {
+//				System.out.print((int)(progress*100) + "%, ");
+////				int counter;
+////				counter++;
+////				if (counter%10 == 0)
+////					System.out.println();
+//				lastprogress=progress;
+//			}
+//
+//			String propName;
+////			if ( ontologyFile.contains("Fly"))
+////				propName = prop.toString();
+////			else if (ontologyFile.contains("lubm-ex-2"))
+//				propName = prop.getIRI().toString();
+////			else
+////				propName = prop.getURI().getFragment();
+//			Term propTerm = m_termFactory.getFunctionalTerm(propName, var1, var2);
+//			Term propTermInv = m_termFactory.getFunctionalTerm(propName, var2, var1);
+//			Term[] body = new Term[1];
+//			body[0] = propTerm;
+//			Clause clause = new Clause(body, m_termFactory.getFunctionalTerm("Q", var1, var2));
+////			System.out.println(processed + ": " + clause);
+//			long startSingle = System.currentTimeMillis();
+//			Set<String> ans = evaluator.evaluateQueryWithAnswers(clause);
+//			System.out.println(ans.size() + " in " + (System.currentTimeMillis() - startSingle) + "ms");
+//			if (ans.size() == 0) {
+//				clausesWithNoAnswers.add(clause);
+//				//Create the clause with the inverse role and add it also to the list
+////				body = new Term[1];
+////				body[0] = propTermInv;
+////				clause = new Clause(body, m_termFactory.getFunctionalTerm("Q", var1, var2));
+////				clausesWithNoAnswers.add(clause);
+//			}
+//			else {
+////				roleTermsWithAnswers.add(propTerm);
+////				invRoleTermsWithAnswers.add(propTermInv);
+//
+////				rolesAndAnswers.put(propName, ans);
+//				evaluator.evaluateQueryWithAnswersInverse(clause);
+////				invRolesAndAnswers.put(propName, invertAnswers(ans));
+//			}
+//			System.out.println("overall " + (System.currentTimeMillis() - startSingle));
+//		}
+////		System.out.println("\nClauses With Answers " + (roleTermsWithAnswers.size() + invRolesAndAnswers.size() ) );
+//		System.out.println("ClausesWithNoAnswersSize = " + clausesWithNoAnswers.size() + " in " + (System.currentTimeMillis() - startProperties) + "ms");
+	}
+
+	public static String[] createDataSetFilesLUBM(String dataFilesPath) {
+
+		File dataDir = new File( dataFilesPath );
+		File[] dataFiles = dataDir.listFiles();
+
+		int k = 0;
+
+		for( int i=0 ; i<dataFiles.length ; i++ ) {
+//			if( dataFiles[i] == null )
+//				// Either dir does not exist or is not a directory
+//				return;
+//			else
+			if( !dataFiles[i].toString().contains(".svn") && !dataFiles[i].toString().contains(".DS_Store") ){
+				k++;
+			}
+		}
+
+//		System.out.println( "k = " + k);
+
+		String[] result = new String[k];
+		int globalCounter = 0;
+		for ( int j = 0 ; globalCounter < k ; j++) {
+//			System.out.println(globalCounter);
+
+			int limit = 0;
+			if (j==0)
+				limit = 14;
+			else if (j==1)
+				limit = 18;
+			else if (j==2)
+				limit = 15;
+			else if (j==3)
+				limit = 20;
+			else if (j==4)
+				limit = 21;
+			else if (j==5)
+				limit = 14;
+			else if (j==6)
+				limit = 23;
+			else if (j==7)
+				limit = 16;
+			else if (j==8)
+				limit = 17;
+			else if (j==9)
+				limit = 21;
+			else if (j==10)
+				limit = 19;
+			else if (j==11)
+				limit = 23;
+			else if (j==12)
+				limit = 24;
+			else if (j==13)
+				limit = 18;
+			else if (j==14)
+				limit = 15;
+			else if (j==15)
+				limit = 20;
+			else if (j==16)
+				limit = 18;
+			else if (j==17)
+				limit = 22;
+			else if (j==18)
+				limit = 20;
+			else if (j==19)
+				limit = 24;
+			else if (j==20)
+				limit = 14;
+			else if (j==21)
+				limit = 18;
+			else if (j==22)
+				limit = 16;
+			else if (j==23)
+				limit = 20;
+			else if (j==24)
+				limit = 21;
+			else if (j==25)
+				limit = 15;
+			else if (j==26)
+				limit = 23;
+			else if (j==27)
+				limit = 17;
+			else if (j==28)
+				limit = 17;
+			else if (j==29)
+				limit = 22;
+			for ( int i = 0 ; i <= limit ; i++) {
+				result[globalCounter++] = dataFilesPath + "University"+ j + "_" + i + ".owl";
+//				System.out.println(result[globalCounter]);
+			}
+
+		}
+		return result;
+	}
+
+	public static String[] createDataSetFilesUOBM(String dataFilesPath, int limit) {
+		String[] result = new String[limit];
+
+		for ( int j = 0 ; j < limit ; j++) {
+			result[j] = dataFilesPath + "univ"+ j + ".ttl";
+		}
+
+		return result;
+	}
+
+	public static String[] createDataSetFilesVicodi(String dataFilesPath) {
+		String[] result = new String[1];
+
+		result[0] = dataFilesPath + "vicodi_all.owl";
+
+		return result;
+	}
+
+	public static String[] createDataSetFilesSemintec(String dataFilesPath) {
+		String[] result = new String[1];
+
+		result[0] = dataFilesPath + "bigFile.owl";
+
+		return result;
+	}
+
+	public static String[] createDataSetFilesReactome(String dataFilesPath) {
+		String[] datasetFiles = new String[1];
+		datasetFiles[0] = dataFilesPath + "sample_10.ttl";
+
+		return datasetFiles;
+	}
+
+}

@@ -1,0 +1,1 @@
+select ?x ?y where { ?x rdf:type :Military-Person . ?y :hasRole ?x . ?x :related ?w .}

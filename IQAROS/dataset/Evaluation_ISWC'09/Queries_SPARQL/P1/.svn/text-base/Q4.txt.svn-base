@@ -1,0 +1,2 @@
+SELECT ?x WHERE { ?x :edge ?y . ?y :edge ?z . ?z :edge ?w . ?w :edge ?k .}
+

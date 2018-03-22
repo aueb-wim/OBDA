@@ -1,0 +1,179 @@
+SELECT distinct T2.obj, T1.obj, T0.obj 
+	FROM 
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence_licensee_hst.prlNpdidLicence, '/licensee/', licence_licensee_hst.cmpNpdidCompany, '/history/', 
+	licence_licensee_hst.prlLicenseeDateValidFrom, '/', licence_licensee_hst.prlLicenseeDateValidTo ) AS subject, 
+	prlLicenseeDateValidFrom AS obj FROM licence_licensee_hst WHERE prlLicenseeDateValidFrom <> '9999-12-31T00:00:00') AS T0, 
+
+
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence_licensee_hst.prlNpdidLicence, '/licensee/', licence_licensee_hst.cmpNpdidCompany, '/history/', 
+	licence_licensee_hst.prlLicenseeDateValidFrom, '/', licence_licensee_hst.prlLicenseeDateValidTo ) AS subject, 
+	prlLicenseeInterest AS obj FROM licence_licensee_hst 
+	UNION 
+	SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/baa/', baaNpdidBsnsArrArea, '/licensee/', cmpNpdidCompany, '/history/', baaLicenseeDateValidFrom, '/', baaLicenseeDateValidTo ) AS subject, 
+	baaLicenseeInterest AS obj FROM bsns_arr_area_licensee_hst) AS T1, 
+	
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence_licensee_hst.prlNpdidLicence, '/licensee/', licence_licensee_hst.cmpNpdidCompany, '/history/', 
+	licence_licensee_hst.prlLicenseeDateValidFrom, '/', licence_licensee_hst.prlLicenseeDateValidTo ) AS subject, 
+	CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence.prlNpdidLicence ) AS obj FROM licence_licensee_hst INNER JOIN licence ON licence_licensee_hst.prlNpdidLicence = licence.prlNpdidLicence) 
+	AS T2 
+
+WHERE T0.subject = T1.subject AND T1.subject = T2.subject;
+
+AnswersSize1 = 14842
+Eval Time = 375ms
+
+Q(X0,X1,X2)  <-  ProductionLicence(X0) ^ licenseeForLicence(X44,X0) ^ ProductionLicenceLicensee(X44) ^ dateLicenseeValidFrom(X44,X2) ^ licenseeInterest(X44,X1)
+
+
+
+ans100000(licenceURI,-anon-1) :- http://sws.ifi.uio.no/vocab/npd-v2#ProductionLicence(licenceURI), http://sws.ifi.uio.no/vocab/npd-v2#ProductionLicenceLicensee(-anon-1)
+ans10000(date,licenceURI,-anon-1) :- ans100000(licenceURI,-anon-1), http://sws.ifi.uio.no/vocab/npd-v2#dateLicenseeValidFrom(-anon-1,date)
+ans1000(date,licenceURI,interest,-anon-1) :- ans10000(date,licenceURI,-anon-1), http://sws.ifi.uio.no/vocab/npd-v2#licenseeInterest(-anon-1,interest)
+ans100(date,licenceURI,interest,-anon-1) :- ans1000(date,licenceURI,interest,-anon-1), http://sws.ifi.uio.no/vocab/npd-v2#licenseeForLicence(-anon-1,licenceURI)
+ans10(licenceURI,interest,date) :- ans100(date,licenceURI,interest,-anon-1)
+ans1(licenceURI,interest,date) :- ans10(licenceURI,interest,date)
+
+13:15:13.971 [Thread-1] DEBUG i.u.k.o.o.core.QuestStatement - Flattened program: 
+ans1(licenceURI,interest,date) :- http://sws.ifi.uio.no/vocab/npd-v2#ProductionLicence(licenceURI), http://sws.ifi.uio.no/vocab/npd-v2#ProductionLicenceLicensee(-anon-1_4848), http://sws.ifi.uio.no/vocab/npd-v2#dateLicenseeValidFrom(-anon-1_4848,date), http://sws.ifi.uio.no/vocab/npd-v2#licenseeInterest(-anon-1_4848,interest), http://sws.ifi.uio.no/vocab/npd-v2#licenseeForLicence(-anon-1_4848,licenceURI)
+
+13:15:13.971 [Thread-1] DEBUG i.u.k.o.o.core.QuestStatement - Replacing equivalences...
+13:15:13.973 [Thread-1] DEBUG i.u.k.o.o.core.QuestStatement - Normalized program: 
+ans1(licenceURI,interest,date) :- http://sws.ifi.uio.no/vocab/npd-v2#ProductionLicence(licenceURI), http://sws.ifi.uio.no/vocab/npd-v2#ProductionLicenceLicensee(-anon-1_4848), http://sws.ifi.uio.no/vocab/npd-v2#dateLicenseeValidFrom(-anon-1_4848,date), http://sws.ifi.uio.no/vocab/npd-v2#licenseeInterest(-anon-1_4848,interest), http://sws.ifi.uio.no/vocab/npd-v2#licenseeForLicence(-anon-1_4848,licenceURI)
+
+13:15:13.974 [Thread-1] DEBUG i.u.k.o.o.core.QuestStatement - Start the rewriting process...
+13:15:13.977 [Thread-1] DEBUG i.u.k.o.o.core.QuestStatement - Start the partial evaluation process...
+13:15:13.979 [Thread-1] DEBUG i.u.k.o.o.core.QuestStatement - Data atoms evaluated: 
+ans1(URI("http://sws.ifi.uio.no/data/npd-v2/licence/{}",t9_4853),http://www.w3.org/2001/XMLSchema#decimal(t5_4853),http://www.w3.org/2001/XMLSchema#dateTime(t2_4853)) :- licence_licensee_hst(t1_4853,t2_4853,t3_4853,t4_4853,t5_4853,t6_4853,t7_4853,t8_4853,t9_4853,t10_4853,t11_4853,t12_4853), NEQ(t2_4853,"9999-12-31T00:00:00"), IS_NOT_NULL(t10_4853), IS_NOT_NULL(t9_4853), IS_NOT_NULL(t2_4853), IS_NOT_NULL(t3_4853), IS_NOT_NULL(t5_4853), IS_NOT_NULL(t10_4853), IS_NOT_NULL(t9_4853), IS_NOT_NULL(t2_4853), IS_NOT_NULL(t3_4853), licence(t13_4856,t14_4856,t15_4856,t16_4856,t17_4856,t18_4856,t19_4856,t20_4856,t21_4856,t9_4853,t23_4856,t24_4856,t25_4856,t26_4856,t27_4856), IS_NOT_NULL(t10_4853), IS_NOT_NULL(t9_4853), IS_NOT_NULL(t2_4853), IS_NOT_NULL(t3_4853)
+
+13:15:13.979 [Thread-1] DEBUG i.u.k.o.o.core.QuestStatement - Irrelevant rules removed: 
+ans1(URI("http://sws.ifi.uio.no/data/npd-v2/licence/{}",t9_4853),http://www.w3.org/2001/XMLSchema#decimal(t5_4853),http://www.w3.org/2001/XMLSchema#dateTime(t2_4853)) :- licence_licensee_hst(t1_4853,t2_4853,t3_4853,t4_4853,t5_4853,t6_4853,t7_4853,t8_4853,t9_4853,t10_4853,t11_4853,t12_4853), NEQ(t2_4853,"9999-12-31T00:00:00"), IS_NOT_NULL(t10_4853), IS_NOT_NULL(t9_4853), IS_NOT_NULL(t2_4853), IS_NOT_NULL(t3_4853), IS_NOT_NULL(t5_4853), IS_NOT_NULL(t10_4853), IS_NOT_NULL(t9_4853), IS_NOT_NULL(t2_4853), IS_NOT_NULL(t3_4853), licence(t13_4856,t14_4856,t15_4856,t16_4856,t17_4856,t18_4856,t19_4856,t20_4856,t21_4856,t9_4853,t23_4856,t24_4856,t25_4856,t26_4856,t27_4856), IS_NOT_NULL(t10_4853), IS_NOT_NULL(t9_4853), IS_NOT_NULL(t2_4853), IS_NOT_NULL(t3_4853)
+
+13:15:13.983 [Thread-1] DEBUG i.u.k.o.o.core.QuestStatement - Boolean expression evaluated: 
+ans1(URI("http://sws.ifi.uio.no/data/npd-v2/licence/{}",t9_4853),http://www.w3.org/2001/XMLSchema#decimal(t5_4853),http://www.w3.org/2001/XMLSchema#dateTime(t2_4853)) :- licence_licensee_hst(t1_4853,t2_4853,t3_4853,t4_4853,t5_4853,t6_4853,t7_4853,t8_4853,t9_4853,t10_4853,t11_4853,t12_4853), NEQ("9999-12-31T00:00:00",t2_4853), IS_NOT_NULL(t10_4853), IS_NOT_NULL(t9_4853), IS_NOT_NULL(t2_4853), IS_NOT_NULL(t3_4853), IS_NOT_NULL(t5_4853), IS_NOT_NULL(t10_4853), IS_NOT_NULL(t9_4853), IS_NOT_NULL(t2_4853), IS_NOT_NULL(t3_4853), licence(t13_4856,t14_4856,t15_4856,t16_4856,t17_4856,t18_4856,t19_4856,t20_4856,t21_4856,t9_4853,t23_4856,t24_4856,t25_4856,t26_4856,t27_4856), IS_NOT_NULL(t10_4853), IS_NOT_NULL(t9_4853), IS_NOT_NULL(t2_4853), IS_NOT_NULL(t3_4853)
+
+
+SELECT 
+   CONCAT('http://sws.ifi.uio.no/data/npd-v2/licence/', (QVIEW1.`prlNpdidLicence` AS CHAR(8000) CHARACTER SET utf8))) AS `licenceURI`, 
+   QVIEW2.`cmpLongName` AS `company`, 
+   CAST(QVIEW1.`prlOperDateValidFrom` AS CHAR(8000) CHARACTER SET utf8) AS `date`
+ FROM 
+licence_oper_hst QVIEW1,
+company QVIEW2,
+licence QVIEW3
+WHERE 
+('9999-12-31T00:00:00' <> QVIEW1.`prlOperDateValidFrom`) AND
+(QVIEW1.`cmpNpdidCompany` = QVIEW2.`cmpNpdidCompany`) AND
+(QVIEW1.`prlNpdidLicence` = QVIEW3.`prlNpdidLicence`)
+
+
+
+================================= Q2 =================================
+
+
+Q(X0,X1,X2)  <-  dateOperatorValidFrom(X44,X2) ^ operatorForLicence(X44,X0) ^ licenceOperatorCompany(X44,X45) ^ name(X45,X1)
+
+dateOperatorValidFrom T0
+licenceOperatorCompany T1
+operatorForLicence T2
+name T3
+
+dateOperatorValidFrom(CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', 5, '/operator/', 6, '/history/', 2, '/', 3 ),X2) :- licence_oper_hst(1,X2,3,4,5,6,7,8) /\ NEQ(X2,'9999-12-31T00:00:00')
+
+licence_oper_hst(a1,a2,a3,a4,a5,AAAA6,a7,a8), X44=concat()
+company(1,2,3,4,AAAA6,6,7,8,9,10), 	x45=concat()
+
+licence_oper_hst(b1,b2,b3,b4,BBBB5,b6,b7,b8), x44=concat('http://sws.ifi.uio.no/data/npd-v2/licence/', BBBB5, '/operator/', 6, '/history/', 2, '/', 3)
+licence(1,2,3,4,5,6,7,8,9,BBBB5,11,12,13,14,15),  X0=CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', BBBB5 )
+
+company(X1,2,3,4,5,6,7,8,9,10), X45=concat()
+
+UNION
+
+licence_licensee_hst(1,S2,3,4,5,6,7,8), X44=CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', prlNpdidLicence, '/licensee/', cmpNpdidCompany, '/history/', prlLicenseeDateValidFrom, '/', prlLicenseeDateValidTo )
+
+licence_oper_hst(a1,a2,a3,a4,a5,AAAA6,a7,a8), X44=concat()
+company(1,2,3,4,AAAA6,6,7,8,9,10), 	x45=concat()
+
+licence_oper_hst(b1,b2,b3,b4,BBBB5,b6,b7,b8), x44=concat()
+licence(1,2,3,4,5,6,7,8,9,BBBB5,11,12,13,14,15), 
+
+company(S1,2,3,4,5,6,7,8,9,10), X45=concat()
+
+
+SELECT distinct T2.obj, T3.obj, T0.obj FROM 
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence_oper_hst.prlNpdidLicence, '/operator/', licence_oper_hst.cmpNpdidCompany, '/history/', licence_oper_hst.prlOperDateValidFrom, '/', licence_oper_hst.prlOperDateValidTo ) AS subject, prlOperDateValidFrom AS obj FROM licence_oper_hst WHERE prlOperDateValidFrom <> '9999-12-31T00:00:00' 
+	UNION 
+	SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', prlNpdidLicence, '/licensee/', cmpNpdidCompany, '/history/', prlLicenseeDateValidFrom, '/', prlLicenseeDateValidTo ) AS subject, prlOperDateValidFrom AS obj FROM licence_licensee_hst WHERE prlOperDateValidFrom <> '9999-12-31T00:00:00') 
+	AS T0, 
+
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence_oper_hst.prlNpdidLicence, '/operator/', licence_oper_hst.cmpNpdidCompany, '/history/', licence_oper_hst.prlOperDateValidFrom, '/', licence_oper_hst.prlOperDateValidTo ) AS subject,CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/company/', company.cmpNpdidCompany ) AS obj FROM licence_oper_hst INNER JOIN company ON licence_oper_hst.cmpNpdidCompany = company.cmpNpdidCompany) 
+	AS T1, 
+
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence_oper_hst.prlNpdidLicence, '/operator/', licence_oper_hst.cmpNpdidCompany, '/history/', licence_oper_hst.prlOperDateValidFrom, '/',
+	licence_oper_hst.prlOperDateValidTo ) AS subject,CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence.prlNpdidLicence ) AS obj FROM licence_oper_hst INNER JOIN licence ON
+	licence_oper_hst.prlNpdidLicence = licence.prlNpdidLicence) 
+	AS T2, 
+
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/pipeline/', pipNpdidPipe ) AS subject, pipName AS obj FROM pipLine 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/survey/', seaName ) AS subject, seaName AS obj FROM seis_acquisition 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/baa/', baaNpdidBsnsArrArea ) AS subject, baaName AS obj FROM bsns_arr_area 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/facility/', fclNpdidFacility ) AS subject, fclName AS obj FROM facility_fixed 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/petreg/facility/', tufNpdidTuf ) AS subject, tufName AS obj FROM tuf_petreg_licence 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/block/', wlbNamePart1, '/', wlbNamePart2 ) AS subject, wlbNamePart2 AS obj FROM wellbore_shallow_all 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', prlNpdidLicence, '/task/', prlTaskID ) AS subject, wlbName AS obj FROM licence_task 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/facility/', tufNpdidTuf ) AS subject, tufName AS obj FROM tuf_operator_hst 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/wellbore/', wlbNpdidWellbore ) AS subject, wlbWellboreName AS obj FROM wellbore_npdid_overview 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/block/', wlbNamePart1, '/', wlbNamePart2 ) AS subject, wlbNamePart2 AS obj FROM wellbore_exploration_all 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', prlNpdidLicence, '/task/', prlTaskID ) AS subject, prlTaskName AS obj FROM licence_task 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/field/', fldNpdidField ) AS subject, fldName AS obj FROM field 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/well/', wlbWell ) AS subject, wlbWell AS obj FROM wellbore_npdid_overview 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/stratum/', lsuNpdidLithoStrat ) AS subject, lsuName AS obj FROM wellbore_formation_top 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/quadrant/', wlbNamePart1 ) AS subject, wlbNamePart1 AS obj FROM wellbore_exploration_all 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/discovery/', dscNpdidDiscovery ) AS subject, dscName AS obj FROM discovery 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', prlNpdidLicence ) AS subject, prlName AS obj FROM licence 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/block/', wlbNamePart1, '/', wlbNamePart2 ) AS subject, wlbNamePart2 AS obj FROM wellbore_development_all 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/company/', cmpNpdidCompany ) AS subject, cmpLongName AS obj FROM company 
+	UNION SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/facility/', fclNpdidFacility ) AS subject, fclName AS obj FROM facility_moveable) 
+	AS T3 
+
+
+	WHERE T0.subject = T1.subject AND T1.subject = T2.subject AND T1.obj = T3.subject;
+
+AnswersSize1 = 1963
+Eval Time = 1490ms
+
+
+SELECT distinct T2.obj, T3.obj, T0.obj FROM 
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', prlNpdidLicence, '/operator/', cmpNpdidCompany, '/history/', prlOperDateValidFrom, '/', prlOperDateValidTo ) AS subject, prlOperDateValidFrom AS obj FROM licence_oper_hst WHERE prlOperDateValidFrom <> '9999-12-31T00:00:00' ) 
+	AS T0, 
+
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence_oper_hst.prlNpdidLicence, '/operator/', licence_oper_hst.cmpNpdidCompany, '/history/', licence_oper_hst.prlOperDateValidFrom, '/', licence_oper_hst.prlOperDateValidTo ) AS subject, CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/company/', company.cmpNpdidCompany ) AS obj FROM licence_oper_hst INNER JOIN company ON licence_oper_hst.cmpNpdidCompany = company.cmpNpdidCompany) 
+	AS T1, 
+
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence_oper_hst.prlNpdidLicence, '/operator/', licence_oper_hst.cmpNpdidCompany, '/history/', licence_oper_hst.prlOperDateValidFrom, '/', 	licence_oper_hst.prlOperDateValidTo ) AS subject,CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence.prlNpdidLicence ) AS obj FROM licence_oper_hst INNER JOIN licence ON 			
+	licence_oper_hst.prlNpdidLicence = licence.prlNpdidLicence) 
+	AS T2, 
+
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/company/', cmpNpdidCompany ) AS subject, cmpLongName AS obj FROM company) 
+	AS T3 
+
+	WHERE T0.subject = T1.subject AND T1.subject = T2.subject AND T1.obj = T3.subject;
+
+
+SELECT distinct T2.obj, T3.obj, T0.obj FROM 
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', prlNpdidLicence, '/operator/', cmpNpdidCompany, '/history/', prlOperDateValidFrom, '/', prlOperDateValidTo ) AS subject, prlOperDateValidFrom AS obj FROM licence_oper_hst WHERE prlOperDateValidFrom <> '9999-12-31T00:00:00' ) 
+	AS T0, 
+
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence_oper_hst.prlNpdidLicence, '/operator/', licence_oper_hst.cmpNpdidCompany, '/history/', licence_oper_hst.prlOperDateValidFrom, '/', licence_oper_hst.prlOperDateValidTo ) AS subject,CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/company/', company.cmpNpdidCompany ) AS obj FROM licence_oper_hst
+		INNER JOIN company ON licence_oper_hst.cmpNpdidCompany = company.cmpNpdidCompany) 
+	AS T1, 
+
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence_oper_hst.prlNpdidLicence, '/operator/', licence_oper_hst.cmpNpdidCompany, '/history/', licence_oper_hst.prlOperDateValidFrom, '/', licence_oper_hst.prlOperDateValidTo ) AS subject,CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/licence/', licence.prlNpdidLicence ) AS obj FROM licence_oper_hst 
+		INNER JOIN licence ON licence_oper_hst.prlNpdidLicence = licence.prlNpdidLicence) 
+	AS T2, 
+
+	(SELECT CONCAT( 'http://sws.ifi.uio.no/data/npd-v2/company/', cmpNpdidCompany ) AS subject, cmpLongName AS obj FROM company ) 
+	AS T3 
+
+
+	WHERE T0.subject = T1.subject AND T1.subject = T2.subject AND T1.obj = T3.subject;

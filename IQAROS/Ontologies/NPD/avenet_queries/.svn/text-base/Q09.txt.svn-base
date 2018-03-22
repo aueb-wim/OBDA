@@ -1,0 +1,1 @@
+Q(?0,?1,?2) <- name(?44,?0), Facility(?44), registeredInCountry(?44,?1), idNPD(?44,?2)

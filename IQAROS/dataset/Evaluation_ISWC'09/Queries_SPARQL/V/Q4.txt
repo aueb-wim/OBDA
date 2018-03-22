@@ -1,0 +1,1 @@
+select ?x ?y where { ?x rdf:type :Object . ?x :hasRole ?y . ?y rdf:type :Symbol .}

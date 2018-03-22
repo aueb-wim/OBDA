@@ -1,0 +1,1 @@
+select ?x ?y ?z where { ?x rdf:type :FinantialInstrument . ?x :belongsToCompany ?y . ?y rdf:type :Company . ?y :hasStock ?z . ?z rdf:type :Stock . }

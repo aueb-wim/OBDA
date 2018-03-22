@@ -1,0 +1,195 @@
+package edu.aueb.NPD;
+
+
+import java.net.URLEncoder;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.log4j.PropertyConfigurator;
+import org.coode.owlapi.turtle.TurtleOntologyFormat;
+import org.oxford.comlab.perfectref.parser.DLliteParser;
+import org.semanticweb.owlapi.io.OWLXMLOntologyFormat;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
+
+import edu.aueb.queries.Evaluator;
+
+
+public class PopulateOntologyThroughMappings {
+
+	private static final DLliteParser parser = new DLliteParser();
+
+	static String originalPath = "/Users/avenet/Academia/Ntua/Ontologies/";
+	static String excelFile = "/Users/avenet/Academia/Aueb/Research/IncrementalQueryAnswering/IQAROS_opt=true_DB_lubm_ex_noJoinOpt.xlsx";
+	static String mappings;
+	static String uri = "";
+
+	static final String npdv = "http://sws.ifi.uio.no/vocab/npd-v2#";
+	static final String ptl = "http://sws.ifi.uio.no/vocab/npd-v2-ptl#";
+
+	static boolean print2Excel = false;
+	static String addon = "";
+
+	public static void main(String[] args) throws Exception{
+		PropertyConfigurator.configure("./logger.properties");
+
+		String ontologyFile, queryPath, optPath, path, dbPath;
+		/**
+		 * NPD Tests
+		 */
+		path = originalPath + "npd-benchmark-master/";
+		ontologyFile = "file:" + path + "ontology/npd-v2-ql.owl";
+		queryPath = path + "avenet_queries/";
+		mappings = path + "mappings/mysql/npd-v2-ql-mysql_gstoil_avenet.obda";
+		optPath = path + "OptimizationClauses/atomicConceptsRoles.txt";
+		/*
+		 * NPD DB
+		 */
+		dbPath = "jdbc:mysql://127.0.0.1:3306/npdfactpages";
+		System.out.println("**************************");
+		System.out.println("**\tNPD\t\t**");
+		System.out.println("**************************");
+		runTest(ontologyFile, queryPath, optPath, dbPath, true, 1, print2Excel);
+	}
+
+	private static void runTest(String ontologyFile, String queryPath, String optPath, String dbPath, boolean print) throws Exception {
+		runTest(ontologyFile, queryPath, optPath, dbPath, true, 0);
+	}
+
+	private static void runTest(String ontologyFile, String queryPath, String optPath, String dbPath, boolean print, int limit) throws Exception {
+		runTest(ontologyFile, queryPath, optPath, dbPath, true, 0, false);
+	}
+
+	private static void runTest(String ontologyFile, String queryPath, String optPath, String dbPath, boolean print, int limit, boolean printToExcel) throws Exception {
+		long start=0,totalTime = 0;
+
+		OWLOntologyManager manager = org.semanticweb.owlapi.apibinding.OWLManager.createOWLOntologyManager();
+		OWLOntology onto = manager.loadOntology(IRI.create(ontologyFile));
+		OWLDataFactory factory = manager.getOWLDataFactory();
+
+		/**
+		 * Get all the concept and (object,data) properties from the ontology
+		 * and map them to an ontology entity
+		 */
+
+		Map<String,OWLEntity> entities = new HashMap<String, OWLEntity>();
+		for ( OWLEntity en : onto.getSignature() ) {
+			entities.put(en.getIRI().toString(), en);
+		}
+		
+		manager.removeOntology(onto);
+
+		/**
+		 * Connect to DB to get instances of concepts and roles
+		 */
+		OWLOntology AboxOnto = manager.createOntology(IRI.create(ontologyFile.replace(".owl", "-abox_gstoil_avenetv2.ttl")));
+//		OWLOntology AboxOnto = manager.createOntology(IRI.create(ontologyFile.replace(".owl", "-abox_gstoil_avenet_rdfxml.owl")));
+		Evaluator ev = null;
+		try {
+			ev = new Evaluator(dbPath,mappings);
+		} catch (SQLException e2) {
+			// TODO Auto-generated catch block
+			System.err.println("Evaluator Error");
+			e2.printStackTrace();
+		}
+       	Map<String, String> str = ev.mappingManager.atomsToSPJ;
+       	Set<Entry<String, String>> entrySet = str.entrySet();
+
+       	for (Entry<String, String> e: entrySet) {
+//       		System.out.println(e.getKey() + "\t" + e.getValue());
+       		String entity = e.getKey();
+       		String prefix = entity.substring(0, entity.indexOf(":")+1);
+       		String entityURI = entity.replace(prefix, prefix.equals("npdv:")?npdv:ptl);
+       		OWLEntity entFromOnto = entities.get(entityURI);
+       		Set<String> res = new HashSet<String>();
+			try {
+				res = ev.evaluateSQLReturnResults(null, e.getValue());
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+       		if ( entFromOnto instanceof OWLClass ) {
+       			for (String s: res) {
+       				String uriEncoded = URLEncoder.encode(s.replace(" ", "%20"));
+       				IRI uri = IRI.create(uriEncoded);
+//    				System.out.println(uri);
+ 					OWLIndividual individual = factory.getOWLNamedIndividual(uri);
+   					OWLClassAssertionAxiom classAssertion = factory.getOWLClassAssertionAxiom((OWLClassExpression) entFromOnto,individual);
+   					manager.addAxiom(AboxOnto, classAssertion);
+				}
+       		}
+       		else if ( entFromOnto instanceof OWLObjectProperty ) {
+       			for ( String s: res ) {
+//       				if ( !s.contains("IQAROS") )
+//       					System.out.println(s + "\t\t" + entFromOnto.getClass());
+       				String subject = s.substring(0,s.indexOf("----IQAROS---"));
+       				String object = s.substring(s.indexOf("----IQAROS---"), s.length()).replace("----IQAROS---", "");
+//       				System.out.println("\n" + s);
+//       				System.out.println("subject = " + subject + "\nobject = " + object);
+       				String subjectEncoded = URLEncoder.encode(subject.replace(" ", "%20"));
+       				IRI subjectURI = IRI.create(subjectEncoded);
+       				OWLIndividual subjectIndividual = factory.getOWLNamedIndividual(subjectURI);
+
+       				String objectEncoded =  URLEncoder.encode(object.replace(" ", "%20"));
+       				IRI objectURI = IRI.create(objectEncoded);
+       				OWLIndividual objectIndividual = factory.getOWLNamedIndividual(objectURI);
+
+       				OWLObjectPropertyAssertionAxiom propaxiom = factory.getOWLObjectPropertyAssertionAxiom((OWLObjectPropertyExpression) entFromOnto, subjectIndividual, objectIndividual);
+       				manager.addAxiom(AboxOnto, propaxiom);
+       			}
+   			}
+   			else if ( entFromOnto instanceof OWLDataProperty ) {
+       			for ( String s: res ) {
+
+//       				System.out.println("\n" + s);
+       				String subject = s.substring(0,s.indexOf("----IQAROS---"));
+       				String object = s.substring(s.indexOf("----IQAROS---"), s.length()).replace("----IQAROS---", "");
+
+//       				System.out.println("subject = " + subject + "\nobject = " + object);
+
+       				String subjectEncoded = URLEncoder.encode(subject.replace(" ", "%20"));
+       				IRI subjectURI = IRI.create(subjectEncoded);
+       				OWLIndividual subjectIndividual = factory.getOWLNamedIndividual(subjectURI);
+
+       				String objectEncoded =  URLEncoder.encode(object.replace(" ", "%20"));
+//       				URI objectURI = URI.create(objectEncoded);
+//       				OWLIndividual objectIndividual = factory.getOWLIndividual(objectURI);
+//
+       				OWLDataPropertyAssertionAxiom propaxiom = factory.getOWLDataPropertyAssertionAxiom((OWLDataPropertyExpression) entFromOnto, subjectIndividual, objectEncoded);
+       				manager.addAxiom(AboxOnto, propaxiom);
+       			}
+   			}
+
+       	}
+       	try {
+//			manager.saveOntology(AboxOnto, new TurtleOntologyFormat());
+//			manager.saveOntology(AboxOnto, new OWLXMLOntologyFormat());
+			manager.saveOntology(AboxOnto, new RDFXMLOntologyFormat());
+		} catch (UnknownOWLOntologyException | OWLOntologyStorageException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+}

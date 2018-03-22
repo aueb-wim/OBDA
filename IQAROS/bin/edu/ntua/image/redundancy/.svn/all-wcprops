@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repos/QueryRefinement/!svn/ver/2502/IQAROS/src/edu/ntua/image/redundancy
+END
+RedundancyElimination.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/QueryRefinement/!svn/ver/2502/IQAROS/src/edu/ntua/image/redundancy/RedundancyElimination.java
+END
+SimpleRedundancyEliminator.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/QueryRefinement/!svn/ver/2302/IQAROS/src/edu/ntua/image/redundancy/SimpleRedundancyEliminator.java
+END
+NonRedundantClausesTracker.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/QueryRefinement/!svn/ver/2302/IQAROS/src/edu/ntua/image/redundancy/NonRedundantClausesTracker.java
+END

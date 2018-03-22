@@ -1,0 +1,56 @@
+10
+
+dir
+2503
+https://svn.image.ece.ntua.gr/repos/QueryRefinement/IQAROS/src/edu/aueb
+https://svn.image.ece.ntua.gr/repos/QueryRefinement
+
+
+
+2016-04-30T10:44:46.241993Z
+2501
+avenet
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+d3975e06-2c6e-4ab0-a26f-bc8f24de13e1
+
+
+
+
+
+
+0
+
+Evaluation
+dir
+
+NPD
+dir
+
+OWL2TTL
+dir
+
+OWLim
+dir
+
+RDfox
+dir
+
+queries
+dir
+
+stats
+dir
+

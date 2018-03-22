@@ -1,0 +1,2 @@
+Q(?0, ?1, ?2, ?3) <- coreForWellbore(?wc,?44), Wellbore(?44), name(?44,?0), wellboreCompletionYear(?44,?3), drillingOperatorCompany(?44,?45), name(?45,?2)
+npdv:coresTotalLength(?wc,?1), npdv:coreIntervalUOM(?wc,?555)

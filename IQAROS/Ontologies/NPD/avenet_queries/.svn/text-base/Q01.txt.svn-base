@@ -1,0 +1,1 @@
+Q(?0,?1,?2) <- ProductionLicence(?0), licenseeForLicence(?44,?0), ProductionLicenceLicensee(?44), dateLicenseeValidFrom(?44,?2), licenseeInterest(?44,?1)

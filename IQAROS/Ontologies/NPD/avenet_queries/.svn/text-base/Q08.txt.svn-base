@@ -1,0 +1,1 @@
+Q(?0,?1,?2,?3) <- productionYear(?44,?0), productionMonth(?44,?1), producedGas(?44,?2), producedOil(?44,?3)

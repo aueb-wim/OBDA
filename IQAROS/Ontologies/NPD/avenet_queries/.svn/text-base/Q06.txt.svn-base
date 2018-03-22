@@ -1,0 +1,1 @@
+Q(?0,?1,?2,?3) <- name(?44,?0), coreForWellbore(?45,?44), Wellbore(?44), wellboreCompletionYear(?44,?3), drillingOperatorCompany(?44,?45), name(?45,?2), coresTotalLength(?45,?1)

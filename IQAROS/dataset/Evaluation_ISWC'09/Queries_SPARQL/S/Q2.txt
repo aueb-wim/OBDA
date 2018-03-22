@@ -1,0 +1,1 @@
+select ?x ?y where { ?x rdf:type :Person . ?x :hasStock ?y . ?y rdf:type :Stock . }

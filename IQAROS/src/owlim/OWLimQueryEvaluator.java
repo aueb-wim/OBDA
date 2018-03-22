@@ -1,0 +1,294 @@
+package owlim;
+/* Copyright 2013, 2014 by the National Technical University of Athens.
+
+This file is part of Hydrowl.
+
+Hydrowl is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Hydrowl is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Hydrowl. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.openrdf.rio.ParseException;
+import org.openrdf.rio.StatementHandlerException;
+import org.openrdf.sesame.query.QueryResultsTable;
+import org.openrdf.sesame.sail.SailUpdateException;
+import org.oxford.comlab.perfectref.rewriter.Clause;
+import org.oxford.comlab.perfectref.rewriter.Term;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntologyChangeException;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+
+
+public class OWLimQueryEvaluator {
+	
+	protected OWLimLowLevelReasoner owlimInterface;
+	protected static Logger logger = Logger.getLogger(OWLimQueryEvaluator.class);
+	private QueryResultsTable lastExecutedQueryForCompletePart;
+	private QueryResultsTable lastExecutedQueryForIncompletePart;
+	private IRI sourceOntologyIRI;
+	private OWLDataFactory factory;
+	
+	public OWLimQueryEvaluator() {
+		owlimInterface = OWLimLowLevelReasoner.createInstanceOfOWLim();		
+	}
+
+	public void loadInputToSystem(String ontologyFile, String[] datasetFiles) {
+
+		long start=0;
+
+		start=System.currentTimeMillis();
+		logger.info("Loading " + ontologyFile + " into OWLim took: ");
+		String newOntologyString = ontologyFile;
+		newOntologyString=newOntologyString.replace("\\", "/");
+		newOntologyString=newOntologyString.replace(" ", "%20");
+//		IRI physicalURIOfBaseOntology = IRI.create(newOntologyString);
+//		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+//		factory = manager.getOWLDataFactory();
+			String newOntologyFile = new String(ontologyFile);
+			newOntologyFile=newOntologyFile.replaceAll(" ", "%20");
+			newOntologyFile=newOntologyFile.replace("\\", "/");
+//			try {
+//				sourceOntologyIRI = manager.loadOntology(IRI.create(newOntologyFile)).getOntologyID().getOntologyIRI();
+//			} catch (OWLOntologyCreationException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+		try {
+			owlimInterface.loadOntologyToSystem(ontologyFile);
+		} catch (SailUpdateException | IOException | ParseException
+				| StatementHandlerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		long ontologyLoaded=System.currentTimeMillis()-start;
+//		System.out.println("Ontology loaded in OWLim in: " + ontologyLoaded + " msec and dataset in " + datasetLoaded + "ms");
+		logger.info(ontologyLoaded + " msec.\n");
+
+		for (int i=0;i<datasetFiles.length;i++) {
+//			if ( datasetFiles[i].contains("University5_0") )
+//				break;
+			start=System.currentTimeMillis();
+   			String datasetFile = datasetFiles[i];
+			logger.info( "Loading " + datasetFile + " into OWLim took: ");
+			try {
+				owlimInterface.loadABoxToSystem(datasetFile);
+			} catch (IOException | ParseException | StatementHandlerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			long datasetLoaded=System.currentTimeMillis()-start;
+			logger.info(datasetLoaded + " msec.\n");
+		}
+	}
+
+
+	public void evaluateQuery(Clause conjunctiveQueryAsClause) {
+//		System.out.println(conjunctiveQueryAsClause);
+		lastExecutedQueryForCompletePart=owlimInterface.evaluateQuery(clauseCQ2SeRQL(conjunctiveQueryAsClause));
+	}
+
+	public void evaluateQuery(Clause conjunctiveQueryAsClause, String uri) {
+//		System.out.println(conjunctiveQueryAsClause);
+		lastExecutedQueryForCompletePart=owlimInterface.evaluateQuery(clauseCQ2SeRQL(conjunctiveQueryAsClause, uri));
+	}
+
+	public void evaluateQueryIncompletePart(String incompleteQueryForOWLim) {
+		lastExecutedQueryForIncompletePart=owlimInterface.evaluateQuery(incompleteQueryForOWLim);
+	}
+	
+	public void evaluateQuery(Set<Clause> queriesCreatedByShrinkingOnly) {
+		lastExecutedQueryForCompletePart=owlimInterface.evaluateQuery(ucqInClauses2SeRQL(queriesCreatedByShrinkingOnly));
+	}
+
+	public void evaluateQuery(Set<Clause> queriesCreatedByShrinkingOnly, String uri) {
+		lastExecutedQueryForCompletePart=owlimInterface.evaluateQuery(ucqInClauses2SeRQL(queriesCreatedByShrinkingOnly, uri));
+	}
+
+	private String ucqInClauses2SeRQL(Set<Clause> ucq) {
+		String queryString="";
+		for (Clause clauseInRewriting : ucq)
+			queryString+=clauseCQ2SeRQL(clauseInRewriting) +"\nUNION\n";
+
+		queryString+="END";
+		queryString=queryString.replace("UNION\nEND", "");
+		
+		return queryString;
+	}
+
+	private String ucqInClauses2SeRQL(Set<Clause> ucq, String uri) {
+		String queryString="";
+		for (Clause clauseInRewriting : ucq)
+			queryString+=clauseCQ2SeRQL(clauseInRewriting, uri) +"\nUNION\n";
+
+		queryString+="END";
+		queryString=queryString.replace("UNION\nEND", "");
+		
+		return queryString;
+	}
+
+	private static String clauseCQ2SeRQL(Clause conjunctiveQuery) {
+		String serqlQuery="SELECT DISTINCT ";
+		for (int i=0 ; i<conjunctiveQuery.getHead().getArguments().length ; i++)
+			serqlQuery+="X"+conjunctiveQuery.getHead().getArgument(i)+",";
+		serqlQuery=serqlQuery.replace("?", "");
+		serqlQuery+=" FROM ";
+		serqlQuery=serqlQuery.replace(", FROM ", " FROM ");
+ 		serqlQuery+=clauseCQ2SeRQL(conjunctiveQuery.getBody());
+		return serqlQuery;
+	}
+
+	private static String clauseCQ2SeRQL(Clause conjunctiveQuery, String uri) {
+		String serqlQuery="SELECT DISTINCT ";
+		for (int i=0 ; i<conjunctiveQuery.getHead().getArguments().length ; i++)
+			serqlQuery+="X"+conjunctiveQuery.getHead().getArgument(i)+",";
+		serqlQuery=serqlQuery.replace("?", "");
+		serqlQuery+=" FROM ";
+		serqlQuery=serqlQuery.replace(", FROM ", " FROM ");
+ 		serqlQuery+=clauseCQ2SeRQL(conjunctiveQuery.getBody(), uri);
+// 		System.out.println(serqlQuery);
+		return serqlQuery;
+	}
+
+	private static String clauseCQ2SeRQL(Term[] atomsOfConjunctiveQuery) {
+		String serqlQuery="";
+		for (int i=0 ; i<atomsOfConjunctiveQuery.length ; i++) {
+			Term at = atomsOfConjunctiveQuery[i];
+			if ( at.getArity() == 1 )
+//					isConcept()) 
+				serqlQuery+="{"+handleArgument(at.getArgument(0))+"} rdf:type {<"+at.getName()+ ">}, ";
+			else
+				serqlQuery+="{"+handleArgument(at.getArgument(0))+"} <"+at.getName()+ "> {"+handleArgument(at.getArgument(1))+"}, ";
+		}
+		serqlQuery+="END";
+		serqlQuery=serqlQuery.replace(", END", "");
+		serqlQuery=serqlQuery.replace("?", "");
+ 
+		return serqlQuery;
+	}
+	
+	private static String clauseCQ2SeRQL(Term[] atomsOfConjunctiveQuery, String uri) {
+		String serqlQuery="";
+		for (int i=0 ; i<atomsOfConjunctiveQuery.length ; i++) {
+			Term at = atomsOfConjunctiveQuery[i];
+			if ( at.getArity() == 1 )
+//					isConcept()) 
+				serqlQuery+="{"+handleArgument(at.getArgument(0))+"} rdf:type {<"+uri+at.getName()+ ">}, ";
+			else
+				serqlQuery+="{"+handleArgument(at.getArgument(0))+"} <"+uri+at.getName()+ "> {"+handleArgument(at.getArgument(1))+"}, ";
+		}
+		serqlQuery+="END";
+		serqlQuery=serqlQuery.replace(", END", "");
+		serqlQuery=serqlQuery.replace("?", "");
+ 
+		return serqlQuery;
+	}
+
+
+	private static String handleArgument(Term argument) {
+		if (argument.isVariable())
+			return "X"+argument.toString();
+		else if (argument.isConstant() && !argument.toString().contains("^^"))
+			return "<"+argument.toString()+">";
+		else
+			return argument.toString();
+	}
+	
+//	public static String clauseCQ2SeRQL(Clause conjunctiveQuery,Set<Atom> excludeAtoms) {
+//		String serqlQuery="SELECT DISTINCT ";
+//		for (int i=0 ; i<conjunctiveQuery.getHead().getVariables().size() ; i++)
+//			serqlQuery+="X"+conjunctiveQuery.getHead().getArgument(i)+",";
+//		serqlQuery=serqlQuery.replace("?", "");
+//		serqlQuery+=" FROM ";
+//		serqlQuery=serqlQuery.replace(", FROM ", " FROM ");
+//		ArrayList<Atom> atomsOfQuery = conjunctiveQuery.getBody();
+//		atomsOfQuery.removeAll(excludeAtoms);
+//		serqlQuery+=clauseCQ2SeRQL(atomsOfQuery);
+//		return serqlQuery;
+//	}
+	
+	public void shutDown() {
+		owlimInterface.clearRepository();
+		owlimInterface.shutdown();
+	}
+
+	public String getValueOfCompletePartAt(int i, int j) {
+		return lastExecutedQueryForCompletePart.getValue(i, j).toString();
+	}
+
+	public int getNumberOfReturnedAnswersCompletePart() {
+		return lastExecutedQueryForCompletePart.getRowCount();
+	}
+	
+	public int getNumberOfReturnedAnswersCompletePartAndPrintAnswers() {
+		for ( int i = 0; i < lastExecutedQueryForCompletePart.getRowCount() ; i++ ) {
+			System.out.print("ans: ");
+			for ( int j = 0 ; j < lastExecutedQueryForCompletePart.getColumnCount() ; j++ ) {
+				System.out.print(lastExecutedQueryForCompletePart.getValue(i, j) + "\t");
+			}
+			System.out.println();
+		}
+		return lastExecutedQueryForCompletePart.getRowCount();
+	}
+
+	public String getValueOfIncompletePartAt(int i, int j) {
+		return lastExecutedQueryForIncompletePart.getValue(i, j).toString();
+	}
+
+	public int getNumberOfReturnedAnswersIncompletePart() {
+		return lastExecutedQueryForIncompletePart.getRowCount();
+	}
+
+	public String getName() {
+		return "OWLim-reasoner";
+	}
+
+//	public void loadAdditionalAxiomsToSystem(Set<Clause> additionalOntologyAxioms) {
+//		OWLClassExpression superClass,subClass;
+//		Set<OWLAxiom> extendedTBox = new HashSet<OWLAxiom>();
+//		for (Clause cl : additionalOntologyAxioms) {
+////			if (cl.getHead().getVariables().size()==1)
+//				superClass = factory.getOWLClass(IRI.create(cl.getHead().getPredicate().getName()));
+////			else
+////				;//there cannot be any other case??
+//			if (cl.getBodyAtomAt(0).getVariables().size()==1)
+//				subClass = factory.getOWLClass(IRI.create(cl.getBodyAtomAt(0).getPredicate().getName()));
+//			else
+//				subClass = factory.getOWLObjectSomeValuesFrom(factory.getOWLObjectProperty(IRI.create(cl.getBodyAtomAt(0).getPredicate().getName())), factory.getOWLThing());
+//			extendedTBox.add(factory.getOWLSubClassOfAxiom(subClass, superClass));
+//		}
+//		String tempOntologyFileForExtendedTBox;
+//		try {
+//			tempOntologyFileForExtendedTBox = RewritingMinimiser.saveOntology( sourceOntologyIRI, extendedTBox, "ExtendedTBox" );
+//			tempOntologyFileForExtendedTBox=OWLimLowLevelReasoner.replaceIRIStaff(tempOntologyFileForExtendedTBox);
+//			owlimInterface.loadAdditionalAxiomsToSystem(tempOntologyFileForExtendedTBox);
+//		} catch (OWLOntologyChangeException e) {
+//			e.printStackTrace();
+//		} catch (OWLOntologyCreationException e) {
+//			e.printStackTrace();
+//		} catch (OWLOntologyStorageException e) {
+//			e.printStackTrace();
+//		}
+//	}
+}

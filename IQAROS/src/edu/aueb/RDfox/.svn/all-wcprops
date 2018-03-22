@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/repos/QueryRefinement/!svn/ver/2498/IQAROS/src/edu/aueb/RDfox
+END
+PreProcessingRDFoxOptimized.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/QueryRefinement/!svn/ver/2462/IQAROS/src/edu/aueb/RDfox/PreProcessingRDFoxOptimized.java
+END
+Snippet.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repos/QueryRefinement/!svn/ver/2424/IQAROS/src/edu/aueb/RDfox/Snippet.java
+END
+PreProcessingRDFox.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/QueryRefinement/!svn/ver/2462/IQAROS/src/edu/aueb/RDfox/PreProcessingRDFox.java
+END
+IncEvalOntologiesRDfox.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/QueryRefinement/!svn/ver/2498/IQAROS/src/edu/aueb/RDfox/IncEvalOntologiesRDfox.java
+END
+JRDFoxDemo.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/repos/QueryRefinement/!svn/ver/2424/IQAROS/src/edu/aueb/RDfox/JRDFoxDemo.java
+END
+RDFoxSingleRun.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/QueryRefinement/!svn/ver/2465/IQAROS/src/edu/aueb/RDfox/RDFoxSingleRun.java
+END
+RDFoxQueryEvaluator.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/QueryRefinement/!svn/ver/2462/IQAROS/src/edu/aueb/RDfox/RDFoxQueryEvaluator.java
+END
+RDFoxSingleExecution.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/QueryRefinement/!svn/ver/2424/IQAROS/src/edu/aueb/RDfox/RDFoxSingleExecution.java
+END

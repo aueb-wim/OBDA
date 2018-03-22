@@ -1,0 +1,1 @@
+select ?x where { ?x rdf:type :Device . ?x :assistsWith ?y .}

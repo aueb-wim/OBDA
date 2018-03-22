@@ -1,0 +1,1 @@
+select ?x where { ?x rdf:type :Individual . ?x :hasRole ?y . ?y rdf:type :Scientist . ?x :hasRole ?z . ?z rdf:type :Discoverer . ?x :hasRole ?w . ?w rdf:type :Inventor .}

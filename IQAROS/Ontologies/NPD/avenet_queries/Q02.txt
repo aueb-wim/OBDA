@@ -1,0 +1,1 @@
+Q(?0,?1,?2) <- ProductionLicence(?0), operatorForLicence(?44,?0), ProductionLicenceOperator(?44), dateOperatorValidFrom(?44,?2), licenceOperatorCompany(?44,?45), name(?45,?1)

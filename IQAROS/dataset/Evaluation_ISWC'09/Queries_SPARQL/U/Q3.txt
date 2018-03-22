@@ -1,0 +1,7 @@
+select ?x ?y ?z where { 
+?x rdf:type :Student . 
+?x :advisor ?y . 
+?y rdf:type :FacultyStaff . 
+?x :takesCourse ?z . 
+?y :teacherOf ?z . 
+?z rdf:type :Course . }

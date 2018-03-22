@@ -1,0 +1,1 @@
+select ?x ?y ?z where { ?x rdf:type :Person . ?x :hasStock ?y . ?y rdf:type :Stock . ?y :isListedIn ?z . ?z rdf:type :StockExchangeList . }

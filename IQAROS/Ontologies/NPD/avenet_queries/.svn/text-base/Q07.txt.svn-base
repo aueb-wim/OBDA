@@ -1,0 +1,1 @@
+Q(?0,?1,?2,?3,?4,?5,?6,?7) <- FieldMonthlyProduction(?44), productionYear(?44,?1), productionMonth(?44,?2), producedCondensate(?44,?3), producedGas(?44,?4), producedNGL(?44,?5), producedOil(?44,?6), producedOilEquivalents(?44,?7)

@@ -1,0 +1,1 @@
+select ?x where { ?x :worksFor ?y . ?y :affiliatedOrganizationOf ?z . }

@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/repos/QueryRefinement/!svn/ver/2501/IQAROS/src/edu/aueb/queries
+END
+Evaluator.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/QueryRefinement/!svn/ver/2501/IQAROS/src/edu/aueb/queries/Evaluator.java
+END
+ClauseParser.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/QueryRefinement/!svn/ver/2418/IQAROS/src/edu/aueb/queries/ClauseParser.java
+END
+OptimizeRew.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/QueryRefinement/!svn/ver/2442/IQAROS/src/edu/aueb/queries/OptimizeRew.java
+END
+QueryOptimization.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/QueryRefinement/!svn/ver/2501/IQAROS/src/edu/aueb/queries/QueryOptimization.java
+END

@@ -1,0 +1,1 @@
+Q(?0,?1) <- member(?0,?1), coreForWellbore(?1,?44), Wellbore(?44)

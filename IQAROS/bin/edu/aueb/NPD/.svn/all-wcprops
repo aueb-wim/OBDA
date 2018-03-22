@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/repos/QueryRefinement/!svn/ver/2495/IQAROS/src/edu/aueb/NPD
+END
+OBDAParser.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repos/QueryRefinement/!svn/ver/2447/IQAROS/src/edu/aueb/NPD/OBDAParser.java
+END
+EvaluateMappings.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/QueryRefinement/!svn/ver/2446/IQAROS/src/edu/aueb/NPD/EvaluateMappings.java
+END
+IncEvalOntologies.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/QueryRefinement/!svn/ver/2495/IQAROS/src/edu/aueb/NPD/IncEvalOntologies.java
+END
+OBDAParser_Clauses.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/QueryRefinement/!svn/ver/2490/IQAROS/src/edu/aueb/NPD/OBDAParser_Clauses.java
+END
+FindContainmentAmongAnswers.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/QueryRefinement/!svn/ver/2460/IQAROS/src/edu/aueb/NPD/FindContainmentAmongAnswers.java
+END
+PopulateOntologyThroughMappings.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/QueryRefinement/!svn/ver/2460/IQAROS/src/edu/aueb/NPD/PopulateOntologyThroughMappings.java
+END

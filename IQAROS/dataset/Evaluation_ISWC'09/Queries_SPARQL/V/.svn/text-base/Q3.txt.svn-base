@@ -1,0 +1,3 @@
+select ?x ?y where { ?x rdf:type :Time-Dependent-Relation . 
+?x :hasRelationMember ?y . 
+?y rdf:type :Event .}

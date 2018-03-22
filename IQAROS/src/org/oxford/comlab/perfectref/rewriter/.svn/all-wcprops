@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/QueryRefinement/!svn/ver/2464/IQAROS/src/org/oxford/comlab/perfectref/rewriter
+END
+Clause.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/QueryRefinement/!svn/ver/2464/IQAROS/src/org/oxford/comlab/perfectref/rewriter/Clause.java
+END
+FunctionalTerm.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/QueryRefinement/!svn/ver/2424/IQAROS/src/org/oxford/comlab/perfectref/rewriter/FunctionalTerm.java
+END
+TermFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/repos/QueryRefinement/!svn/ver/2424/IQAROS/src/org/oxford/comlab/perfectref/rewriter/TermFactory.java
+END
+Substitution.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/repos/QueryRefinement/!svn/ver/2302/IQAROS/src/org/oxford/comlab/perfectref/rewriter/Substitution.java
+END
+Term.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/QueryRefinement/!svn/ver/2424/IQAROS/src/org/oxford/comlab/perfectref/rewriter/Term.java
+END
+Variable.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/QueryRefinement/!svn/ver/2424/IQAROS/src/org/oxford/comlab/perfectref/rewriter/Variable.java
+END
+EntParInJoinsWNoAns.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/repos/QueryRefinement/!svn/ver/2424/IQAROS/src/org/oxford/comlab/perfectref/rewriter/EntParInJoinsWNoAns.java
+END
+PI.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/QueryRefinement/!svn/ver/2302/IQAROS/src/org/oxford/comlab/perfectref/rewriter/PI.java
+END
+Saturator.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/QueryRefinement/!svn/ver/2302/IQAROS/src/org/oxford/comlab/perfectref/rewriter/Saturator.java
+END
+Saturator_Tree.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/repos/QueryRefinement/!svn/ver/2302/IQAROS/src/org/oxford/comlab/perfectref/rewriter/Saturator_Tree.java
+END
+Constant.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/repos/QueryRefinement/!svn/ver/2424/IQAROS/src/org/oxford/comlab/perfectref/rewriter/Constant.java
+END

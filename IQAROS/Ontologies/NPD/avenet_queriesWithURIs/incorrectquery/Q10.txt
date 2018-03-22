@@ -1,0 +1,3 @@
+Q(?0,?1) <- name(?44,?0), dateUpdated(?44,?1), DiscoveryWellbore(?44)
+
+//To DiscoveryWellbore einai concept ths ontologias alla den yparxei mapping apo thn bash oute einai pinakas ths bashs.

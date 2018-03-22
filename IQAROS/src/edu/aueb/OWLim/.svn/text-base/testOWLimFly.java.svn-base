@@ -1,0 +1,157 @@
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.poi.openxml4j.util.ZipSecureFile.ThresholdInputStream;
+
+import edu.aueb.queries.ClauseParser;
+import owlim.OWLimQueryEvaluator;
+
+//import edu.aueb.queries.ClauseParser;
+
+
+public class testOWLimFly {
+	
+	static String originalPath = "/Users/avenet/Academia/Ntua/Ontologies/";
+	static String path = originalPath + "LUBM/";
+
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+		
+		PropertyConfigurator.configure("./logger.properties");
+		
+		String ontologyFile, queryPath, optPath, dataFilesPath;
+		/**
+		 * Fly tests
+		 */
+		path =  originalPath + "Fly/";
+		ontologyFile = "file:" + path + "fly_anatomy_XP_with_GJ_FC_individuals_owl-tBox-AssNorm-new.owl";
+//		queryPath = path + "QueriesOWLim/";
+		queryPath = path + "TestQueries/";
+		optPath = path + "OptimizationClausesOWLim/optimizationClauses.txt";
+		String dataFiles = path;
+		String uri = "http://purl.obolibrary.org/obo/";
+		/*
+		 * Fly DB
+		 */
+		String dbPath = "jdbc:postgresql://127.0.0.1:5432/Fly";
+		System.out.println("**************************");
+		System.out.println("**\tFlyto the moon\t**");
+		System.out.println("**************************");
+		String[] datasetFiles = new String[1];
+		datasetFiles[0] = path + "fly_anatomy_XP_with_GJ_FC_individuals_owl-aBox-AssNorm.owl";
+
+		OWLimQueryEvaluator evaluator = new OWLimQueryEvaluator();
+//		for ( int i = 0 ; i < datasetFiles.length ; i++ )
+//			System.out.println(i + ": " + datasetFiles[i]);
+		evaluator.loadInputToSystem(ontologyFile, datasetFiles);
+		
+		String queryFile = queryPath + "Query_01.txt";
+		
+		System.out.println("Query = " + new ClauseParser().parseClause((new BufferedReader(new FileReader(queryFile))).readLine()));
+		evaluator.evaluateQuery(new ClauseParser().parseClause((new BufferedReader(new FileReader(queryFile))).readLine()));
+		System.out.println(evaluator.getNumberOfReturnedAnswersCompletePart());
+		for ( int i = 0 ; i < evaluator.getNumberOfReturnedAnswersCompletePart() ; i++ )
+			System.out.println(evaluator.getValueOfCompletePartAt(i, 0));
+//		System.out.println(evaluator.getNumberOfReturnedAnswersIncompletePart());
+		
+		System.exit(0);
+	}
+	
+	public static String[] createDataSetFiles(String dataFilesPath) {
+
+		File dataDir = new File( dataFilesPath );
+		File[] dataFiles = dataDir.listFiles();
+		
+		int k = 0;
+		
+		for( int i=0 ; i<dataFiles.length ; i++ ) {
+//			if( dataFiles[i] == null )
+//				// Either dir does not exist or is not a directory
+//				return;
+//			else
+			if( !dataFiles[i].toString().contains(".svn") && !dataFiles[i].toString().contains(".DS_Store") ){
+				k++;
+			}
+		}
+		
+		System.out.println( "k = " + k);
+
+		String[] result = new String[k];
+		int globalCounter = 0;
+		for ( int j = 0 ; globalCounter < k ; j++) {
+//			System.out.println(globalCounter);
+			
+			int limit = 0;
+			if (j==0)
+				limit = 14;
+			else if (j==1)
+				limit = 18;
+			else if (j==2)
+				limit = 15;
+			else if (j==3)
+				limit = 20;
+			else if (j==4)
+				limit = 21;
+			else if (j==5)
+				limit = 14;
+			else if (j==6)
+				limit = 23;
+			else if (j==7)
+				limit = 16;
+			else if (j==8)
+				limit = 17;
+			else if (j==9)
+				limit = 21;
+			else if (j==10)
+				limit = 19;
+			else if (j==11)
+				limit = 23;
+			else if (j==12)
+				limit = 24;
+			else if (j==13)
+				limit = 18;
+			else if (j==14)
+				limit = 15;
+			else if (j==15)
+				limit = 20;
+			else if (j==16)
+				limit = 18;
+			else if (j==17)
+				limit = 22;
+			else if (j==18)
+				limit = 20;
+			else if (j==19)
+				limit = 24;
+			else if (j==20)
+				limit = 14;
+			else if (j==21)
+				limit = 18;
+			else if (j==22)
+				limit = 16;
+			else if (j==23)
+				limit = 20;
+			else if (j==24)
+				limit = 21;
+			else if (j==25)
+				limit = 15;
+			else if (j==26)
+				limit = 23;
+			else if (j==27)
+				limit = 17;
+			else if (j==28)
+				limit = 17;
+			else if (j==29)
+				limit = 22;
+			for ( int i = 0 ; i <= limit ; i++) {
+				result[globalCounter++] = dataFilesPath + "University"+ j + "_" + i + ".owl";
+//				System.out.println(result[globalCounter]);
+			}
+			
+		}
+		return result;
+	}
+}
