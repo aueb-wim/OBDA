@@ -7,3 +7,12 @@ In this version, the module after the Query Rewriting is over, connects to the N
 This repository contains 2 projects:
   - hbp_web_queriesUB which is the web interface
   - IQAROS which is the Query Rewriting engine
+
+GlashFish Settings:
+
+1) Navigate to glashfish admin panel, localhost:4848
+2) Go to Configurations->server-config->JVM Settings
+3) Then go to "JVM Options" tab
+4) Increase the "-Xmx" parameter e.x. to -Xmx5012m
+5) Save & Restart the server to apply changes
+
